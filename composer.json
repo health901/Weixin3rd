@@ -1,0 +1,23 @@
+{
+    "name": "vrobin/weixin3rd",
+    "type": "library",
+    "description": "Weixin 3rd SDK",
+    "keywords": ["weixin"],
+    "homepage": "https://github.com/health901/Weixin3rd",
+    "license": "MIT",
+    "version":"v1.0.0",
+    "authors": [
+        {
+            "name": "health901"
+        }
+    ],
+    "require": {
+        "php": ">=7.0",
+        "vrobin/weixin": "^3.0.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "VRobin\\Weixin3rd\\": "src/"
+        }
+    }
+}
