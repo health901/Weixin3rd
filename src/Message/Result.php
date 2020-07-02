@@ -31,7 +31,7 @@ class Result
     public function __get($name)
     {
         if (property_exists($this->xml, $name)) {
-            return$this->xml->$name;
+            return $this->xml->$name;
         }
 
         $method = 'get' . $name;
@@ -59,6 +59,7 @@ class Result
         $len_list = unpack("N", substr($content, 0, 4));
         $xml_len = $len_list[1];
         $xml_content = substr($content, 4, $xml_len);
-        $this->xml = simplexml_load_string($xml_content, 'SimpleXMLElement', LIBXML_NOCDATA);
+        $xml = simplexml_load_string($xml_content, 'SimpleXMLElement', LIBXML_NOCDATA);
+        $this->xml = json_decode(json_encode($xml));
     }
 }

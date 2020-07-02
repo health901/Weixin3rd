@@ -42,7 +42,6 @@ class Responser
      */
     public function listen()
     {
-
         $data = file_get_contents("php://input");
         if (!$data) {
             return;
@@ -51,22 +50,23 @@ class Responser
         if(!$result){
             return;
         }
+        
         $this->data = $result;
         $infoType =  $result->InfoType ? $result->InfoType : $result->Event;
         if(key_exists($infoType,$this->callbacks)){
             $nClass = $this->callbacks[$infoType];
             $event = new $nClass($this->data);
             $event->run();
-            return;
+        }else{
+            $class = str_replace(" ","",ucwords(str_replace("_"," ",$infoType)));
+            if(file_exists(__DIR__.'/Events/'.$class.'.php')){
+                $nClass = 'VRobin\\Weixin3rd\\Message\\Events\\'.$class;
+                $event = new $nClass($this->data);
+                $event->run();
+            }
         }
-
-        $class = str_replace(" ","",ucwords(str_replace("_"," ",$infoType)));
-        if(file_exists(__DIR__.'/Events/'.$class.'.php')){
-            $nClass = 'VRobin\\Weixin3rd\\Message\\Events\\'.$class;
-            $event = new $nClass($this->data);
-            $event->run();
-            return;
-        }
+        echo 'success';
+        exit;
     }
 
 }

@@ -20,20 +20,11 @@ class WxaSetNickName extends Request3rd
     public function setLicense($v){
         $this->addMedia('license',$v);
     }
-    public function setStuff1($v){
-        $this->addMedia('naming_other_stuff_1',$v);
-    }
-    public function setStuff2($v){
-        $this->addMedia('naming_other_stuff_2',$v);
-    }
-    public function setStuff3($v){
-        $this->addMedia('naming_other_stuff_3',$v);
-    }
-    public function setStuff4($v){
-        $this->addMedia('naming_other_stuff_4',$v);
-    }
-    public function setStuff5($v){
-        $this->addMedia('naming_other_stuff_5',$v);
+    public function setStuffs($array){
+        for($i=1; $i<=max(count($array),5); $i++){
+            $name = 'naming_other_stuff_'.$i;
+            $this->addMedia($name,$v);
+        }
     }
     public function addMedia($key,$media_id){
         $this->data[$key] = $media_id;

@@ -19,6 +19,7 @@ trait ApiTrait
      */
     public function request($url, $data = array(), $method = 'get', $raw = false)
     {
+//        dump($url,$data);
         if ($method == 'post') {
             $result = $this->post($url, $data);
         } else {

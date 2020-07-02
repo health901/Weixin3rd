@@ -13,7 +13,7 @@
     ],
     "require": {
         "php": ">=7.0",
-        "vrobin/weixin": "^3.0.2"
+        "vrobin/weixin": "^3.0.4"
     },
     "autoload": {
         "psr-4": {
