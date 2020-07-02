@@ -8,7 +8,7 @@ use VRobin\Weixin3rd\Request\Request3rd;
 
 class WxaSetNickName extends Request3rd
 {
-    protected $api = 'wxa.setnickname';
+    protected $api = 'wxa/setnickname';
     protected $method = 'POST';
 
     public function setNickName($name){
