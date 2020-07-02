@@ -1,13 +1,14 @@
 <?php
 
 
-namespace VRobin\Weixin\Token;
+namespace VRobin\Weixin3rd\Token;
 
 
 use VRobin\Weixin\Cache\Cache;
+use VRobin\Weixin\Token\TokenInterface;
 use VRobin\Weixin\Exception\{ApiException, TokenException, WeixinException};
-use VRobin\Weixin\Request\Apis\AccessTokenRequest;
-use VRobin\Weixin\Request\ApiSender;
+use VRobin\Weixin3rd\Request\Apis\ApiComponentToken;
+use VRobin\Weixin3rd\Request\ApiSender;
 
 class TokenCreator implements TokenInterface
 {
@@ -34,9 +35,9 @@ class TokenCreator implements TokenInterface
         }
         $data = $this->request();
         $expire = time() + $data['expires_in'] - 200;
-        $accessToken = array('acccessToken' => $data['access_token'], 'expire' => $expire, 'appid' => $this->appid);
+        $accessToken = array('acccessToken' => $data['component_access_token'], 'expire' => $expire, 'appid' => $this->appid);
         Cache::set('acccessToken', $accessToken);
-        return $data['access_token'];
+        return $data['component_access_token'];
     }
 
     /**
@@ -47,11 +48,15 @@ class TokenCreator implements TokenInterface
      */
     protected function request()
     {
-        $api = new AccessTokenRequest();
-        $api->setAppid($this->appid);
-        $api->setSecret($this->secret);
+        $ticket = Cache::get('ticket.'.$this->appid);
+        if(!$ticket){
+            return;
+        }
+        $api = new ApiComponentToken();
+        $api->setComponentAppsecret($this->secret);
+        $api->setComponentVerifyTicket($ticket);
 
-        $sender = new ApiSender();
+        $sender = new ApiSender($this->appid);
         return $sender->sendRequest($api);
     }
 

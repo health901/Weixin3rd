@@ -17,39 +17,27 @@ trait ApiTrait
      * @return string
      * @throws ApiException
      */
-    public function request($url, $data = array(), $method = 'get')
+    public function request($url, $data = array(), $method = 'get', $raw = false)
     {
         if ($method == 'post') {
             $result = $this->post($url, $data);
         } else {
             $result = $this->get($url, $data);
         }
-        $data = json_decode($result, true);
-        if (isset($data['errcode']) && $data['errcode']) {
-            throw new ApiException($data['errcode']. ':' .$data['errmsg'], $data['errcode']);
+        $res = json_decode($result, true);
+        if (isset($res['errcode']) && $res['errcode']) {
+            throw new ApiException($res['errcode']. ':' .$res['errmsg'], $res['errcode']);
         }
-        return $data;
+        return $raw ? $result : $res;
     }
 
     protected function get($api, $data)
     {
-        $url = $this->apiUrl($api);
-        return Request::get($url, $data);
+        return Request::get($api, $data);
     }
 
     protected function post($api, $data)
     {
-        $url = $this->apiUrl($api);
-        return Request::post($url, json_encode($data, JSON_UNESCAPED_UNICODE));
-    }
-
-    protected function apiUrl($api)
-    {
-        $url = $this->apiUrl . $api;
-        if ($this->accessToken) {
-            $url .= '?access_token=' . $this->accessToken;
-        }
-
-        return $url;
+        return Request::post($api, $data);
     }
 }

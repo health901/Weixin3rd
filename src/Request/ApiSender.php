@@ -5,23 +5,22 @@ namespace VRobin\Weixin3rd\Request;
 
 
 use VRobin\Weixin\Exception\{ApiException, TokenException, WeixinException};
-use VRobin\Weixin\Request\Request as Api;
-use VRobin\Weixin\Token\TokenCreator;
 use VRobin\Weixin\Token\TokenInterface;
+use VRobin\Weixin3rd\Request\Request as Api;
 
 class ApiSender
 {
     use ApiTrait;
 
-    protected $apiUrl = "https://api.weixin.qq.com/cgi-bin/";
-    protected $accessToken;
+    protected $appid;
     /**
      * @var TokenInterface
      */
     protected $tokenCreator;
 
-    public function __construct($tokenCreator = null)
+    public function __construct($appid = "", $tokenCreator = null)
     {
+        $this->appid = $appid;
         if ($tokenCreator && $tokenCreator instanceof TokenInterface) {
             $this->tokenCreator = $tokenCreator;
         }
@@ -37,11 +36,15 @@ class ApiSender
     public function sendRequest(Api $api)
     {
         if ($api->isNeedToken()) {
-            $this->accessToken = $this->tokenCreator->getToken();
-            if (!$this->accessToken) {
-                throw new TokenException("Cannot get accessToken");
+            $componentAccessToken = $this->tokenCreator->getToken();
+            if (!$componentAccessToken) {
+                throw new TokenException("Cannot get componentAccessToken");
             }
+            $api->setComponentAccessToken($componentAccessToken);
         }
-        return $this->request($api->getApi(), $api->getData(), $api->getMethod());
+        if($api->isNeedAppid()){
+            $api->setComponentAppid($this->appid);
+        }
+        return $this->request($api->getApi(), $api->getData(), $api->getMethod(), $api->returnRaw());
     }
 }
