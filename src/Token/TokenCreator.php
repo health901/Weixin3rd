@@ -50,6 +50,7 @@ class TokenCreator implements TokenInterface
     {
         $ticket = Cache::get('ticket.'.$this->appid);
         if(!$ticket){
+            throw new TokenException("ticket {$this->appid} expired or not exist");
             return;
         }
         $api = new ApiComponentToken();

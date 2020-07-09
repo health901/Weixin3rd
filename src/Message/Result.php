@@ -22,7 +22,7 @@ class Result
     {
         $xml = simplexml_load_string($xml, \SimpleXMLElement::class, LIBXML_NOCDATA);
         $this->xml = json_decode(json_encode($xml));
-        $this->key = $key;
+        $this->key = base64_decode($key . '=');
         if($this->Encrypt){
             $this->aesDecode();
         }
@@ -50,9 +50,9 @@ class Result
     }
 
     protected function aesDecode(){
-        $key = $this->key.'=';
-        $result = openssl_decrypt(base64_decode($this->Encrypt), 'AES-256-CBC', base64_decode($key), OPENSSL_RAW_DATA);
-
+        $iv = substr($this->key, 0, 16);
+        $decrypted = openssl_decrypt($this->Encrypt,'AES-256-CBC',substr($this->key, 0, 32),OPENSSL_ZERO_PADDING,$iv);
+        $result = $this->decode($decrypted);
         if (strlen($result) < 16)
             return "";
         $content = substr($result, 16, strlen($result));
@@ -61,5 +61,20 @@ class Result
         $xml_content = substr($content, 4, $xml_len);
         $xml = simplexml_load_string($xml_content, 'SimpleXMLElement', LIBXML_NOCDATA);
         $this->xml = json_decode(json_encode($xml));
+    }
+
+    /**
+     * 对解密后的明文进行补位删除
+     * @param decrypted 解密后的明文
+     * @return 删除填充补位后的明文
+     */
+    protected function decode($text)
+    {
+
+        $pad = ord(substr($text, -1));
+        if ($pad < 1 || $pad > 32) {
+            $pad = 0;
+        }
+        return substr($text, 0, (strlen($text) - $pad));
     }
 }

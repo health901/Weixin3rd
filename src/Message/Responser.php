@@ -50,9 +50,10 @@ class Responser
         if(!$result){
             return;
         }
-        
         $this->data = $result;
+
         $infoType =  $result->InfoType ? $result->InfoType : $result->Event;
+
         if(key_exists($infoType,$this->callbacks)){
             $nClass = $this->callbacks[$infoType];
             $event = new $nClass($this->data);
